@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title></title>
+<meta name="description" content="">
+<meta name="author" content="ytyaru">
+<link rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/deed.ja">
+<link rel="icon" href="asset/image/avator.png">
+<link rel="stylesheet" href="css/style.css">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--<script src="lib/fragment-generation-utils.js"></script>-->
+<script src="lib/fragment-generation-utils-no-export.js"></script>
+<script src="js/main.js"></script>
+</head>
+<body>
+    <h1><a href="https://developer.mozilla.org/ja/docs/Web/Text_fragments">TextFragment</a></h1>
+    <p>テキストフラグメントはURLでHTML文書内にある特定のテキスト部分にリンクする機能です。</p>
+    <!--<ul><li><a href="#:~:text=テスト文章">押してみてね</a></li>-->
+    <p>こんにちは。これはテスト文章です。</p>
+    <ol>
+        <li>この文書にある適当なテキストを範囲選択する</li>
+        <li>範囲選択したテキストへのリンクが生成される↓</li>
+    </ol>
+    <p>※なんか範囲選択の動作がおかしい。一文字ずつ選択できない。なぜ？<code>selectionchange</code>イベントハンドラを使っているせい？</p>
+
+    <table><caption>結果</caption>
+        <tr><th>選択テキスト</th><td id="result-text"></td></tr>
+        <tr><th>URL</th><td id="result-url"></td></tr>
+        <tr><th>リンク</th><td><a id="result-link" href="" title=""></a></td></tr>
+    </table>
+</body>
+</html>
+<!-- https://coliss.com/articles/build-websites/operation/work/html-template-for-web-apps-or-sites.html -->
+<!-- https://coliss.com/articles/build-websites/operation/work/html5-template-for-2018.html -->

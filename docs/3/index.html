@@ -1,0 +1,71 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title></title>
+<meta name="description" content="">
+<meta name="author" content="ytyaru">
+<link rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/deed.ja">
+<link rel="icon" href="asset/image/avator.png">
+<link rel="stylesheet" href="css/style.css">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--<script src="lib/fragment-generation-utils.js"></script>-->
+<!--<script src="lib/fragment-generation-utils-no-export.js"></script>-->
+<script src="lib/fragment-generation-utils-grapheme.js"></script>
+<script src="js/main.js"></script>
+</head>
+<body>
+    <h1><a href="https://developer.mozilla.org/ja/docs/Web/Text_fragments">TextFragment</a></h1>
+    <main>
+        <p>　テキストフラグメントはURLでHTML文書内にある特定のテキスト部分にリンクする機能です。</p>
+        <p>　こんにちは。これはテスト<ruby>文章<rt>ぶんしょう</rt></ruby>です。</p>
+        <ol>
+            <li>この文書にある適当なテキストを範囲選択する</li>
+            <li><button type="button" class="make">リンクを作成する</button>ボタンを押す</li>
+            <li>範囲選択したテキストへのリンクが生成される</li>
+        </ol>
+        <button type="button" class="make">リンクを作成する</button>
+        <table><caption>結果</caption>
+            <tr><th>選択テキスト</th><td id="result-text"></td></tr>
+            <tr><th>URL</th><td id="result-url"></td></tr>
+            <tr><th>リンク</th><td><a id="result-link" href="" title=""></a></td></tr>
+        </table>
+        <p>　残念ながらタグの境界を範囲選択に含むとリンクが<em>動作しません</em>。たとえばrubyタグの親文字だけならいいですが、ルビ文字まで含めたらリンクが機能しません。これは致命的な問題です。「文章」だけならリンクしますが「文章ぶんしょう」だとリンクしません。「テスト文章」や「ぶんしょうです」も同様。</p>
+        <p>　これを解決するには自力実装しかなさそう。</p>
+        <!--
+        -->
+        <ul>
+            <li>○<a href="#:~:text=テスト文章">単純なテキスト指定</a></li>
+            <li>○<a href="#:~:text=テスト,です。">ruby,rtタグ全体を含んだ指定（start,end）</a></li>
+            <li>✖<a href="#:~:text=テスト-文章-です。">ruby,rtタグ全体を含んだ指定（prefix,suffix）</a></li>
+            <li>✖<a href="#:~:text=テスト-ぶんしょう-です。">ruby,rtタグ全体を含んだ指定（prefix,suffix）</a></li>
+            <li>✖<a href="#:~:text=テスト--です。">ruby,rtタグ全体を含んだ指定（prefix,suffix）</a></li>
+            <li>✖<a href="#:~:text=テスト-*-です。">ruby,rtタグ全体を含んだ指定（prefix,suffix）</a></li>
+        </ul>
+    </main>
+
+    <h2>参考</h2>
+    <h3>ソースコード</h3>
+    <p>
+        <a href="https://web.dev/articles/text-fragments?hl=ja#programmatic_text_fragment_link_generation">プログラムによるテキスト フラグメント リンクの生成</a>を参考にした。テキストフラグメント生成処理ライブラリのコードは<a href="https://github.com/GoogleChromeLabs/text-fragments-polyfill">text-fragments-polyfill</a>参照。CND上<a href="https://unpkg.com/browse/text-fragments-polyfill@5.5.0/dist/">dist</a>の<a href="https://unpkg.com/browse/text-fragments-polyfill@5.5.0/dist/fragment-generation-utils.js">fragment-generation-utils.js</a>がソースコード本体。
+    </p>
+    <h3><a href="https://unpkg.com/browse/text-fragments-polyfill@5.5.0/dist/fragment-generation-utils.js">fragment-generation-utils.js</a>修正</h3>
+    <ul>
+        <li>ES Module用に生成されたらしく<code>export</code>が使われていた。ES Moduleを使わずに利用したいので、オブジェクトに代入するよう修正した</li>
+        <li><code>Intl.Segmenter(lang, {granularity: 'word'})</code>の<code>word</code>を<code>grapheme</code>に修正した</li>
+        <li>✖どうやらテキストフラグメントは単語単位でないと動作しないらしい。「択したテ」を選択してリンク作成しても機能しない。「選択したテキスト」なら機能する。これは誤字・脱字・衍字を指摘するとき正確に位置指定できない可能性がある。少し広めに指摘することになるか</li>
+    </ul>
+    <h3>main</h3>
+    <ul>
+        <li><code>selectionchange</code>イベントハンドラを使うと選択挙動がバグるのでボタン押下で実行するようにした</li>
+        <li>ボタン内テキストを範囲に含めてリンク作成すると機能しない。codeタグ内テキストを含めたときも同様。おそらく仕様。タグをまたぐと動作しなくなるっぽい。困る。ruby, em, q, code, kbdなど文章の一部として使いたいタグが沢山あるのに、これらの境界が範囲選択にあると動作しなくなる……</li>
+    </ul>
+    <!--
+    <p>※<code>selectionchange</code>イベントハンドラを使うと選択挙動がバグるのでボタン押下で実行するようにした</p>
+    <p>※範囲を字語単位のままに修正した。ソースコード<code>Intl.Segmenter(lang, {granularity: 'word'})</code>の<code>word</code>を<code>grapheme</code>に修正した。</p>
+    <p>※ボタン内テキストを範囲に含めてリンク作成すると機能しない。codeタグ内テキストを含めたときも同様。おそらく仕様。困る</p>
+    -->
+</body>
+</html>
+<!-- https://coliss.com/articles/build-websites/operation/work/html-template-for-web-apps-or-sites.html -->
+<!-- https://coliss.com/articles/build-websites/operation/work/html5-template-for-2018.html -->
